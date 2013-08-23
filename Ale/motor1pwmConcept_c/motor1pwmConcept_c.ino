@@ -119,11 +119,12 @@ void loop(){
    pinMode(10,OUTPUT);
    				    //mcu freq
    unsigned char result=(int)((257.0-(16000000.0/44100))+0.5); //the 0.5 is for rounding;
-  		 result=(int)((257.0-(TIMER_CLOCK_FREQ/timeoutFrequency))+0.5); //the 0.5 is for rounding;
+  	//	 result=(int)((257.0-(TIMER_CLOCK_FREQ/timeoutFrequency))+0.5); //the 0.5 is for rounding;
    ICR1=1023;  // range: 1023 (7.8 KHz) 65 (123 KHz)
 
    TCCR1A = 0;      // Just clear register. 
-   TCCR1B = _BV(WGM13); 
+   
+   TCCR1B = _BV(WGM13); // phase and freq correct mode 
    // OC1A,B HI when COUNT = OCR1A,B upcounting, LO when COUNT = OCR1A,B downcounting. 
    // Use phase correct: mode 8: 
    TCCR1A = _BV(COM1A1) | _BV(COM1A0)| _BV(COM1B1)| _BV(COM1B0);//turns on both 1a and 1b 
@@ -134,7 +135,7 @@ void loop(){
    TCCR1B |= _BV(CS10);//define prescaler 8.  This is equavalent to 1.9 KHz. 
    
 
-   TIMSK1 = 1<<OCIE1B;
+   TIMSK1 = _BV(OCIE1B);
 
 
 
