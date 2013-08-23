@@ -75,6 +75,7 @@ void machineStates(int i){
 }*/
 
 byte states[6] = {B00100100,B00110000,B01010000,B01001000,B00001000,B00000100}; //store PORTD values for the states;
+
 void machineState_init(){
 
 DDRD |= B01111100;  // set pin [2,6] as output
@@ -89,14 +90,7 @@ void setup(){
 
   Serial.begin(9600);
   
-	// pins setup
-	pinMode(2,OUTPUT);  //demux selector
-	pinMode(3,OUTPUT);
-
-	pinMode(4,OUTPUT);  // to lower mosfet
-	pinMode(5,OUTPUT);
-	pinMode(6,OUTPUT);
- 
+machineState_init();
 timer1_init();
 
 }
@@ -109,13 +103,7 @@ int stato = 0;
 
 void loop(){
 
-  Serial.println(cpmCounter % 7); 
-
-	//quando il sensore sta andando a zero
-
-	
-
-
+	Serial.println(cpmCounter % 7); 
 
 	// imposta il duty da un potenziometro (in futuro da interfaccia bluetooth)
 
