@@ -74,11 +74,18 @@
  
  }*/
 
-byte states[4] = {
-  B01100000,
+#define NUM_STATES 6
+
+byte states[NUM_STATES] = {
   B01000100,
-  B00011000,
-  B00111100}; //store PORTD values for the states;
+  B10000100,
+  B10001000,
+  B00101000,
+  B00110000,
+  B01010000}; //store PORTD values for the states;
+
+  
+
 
 void machineState_init(){
 
@@ -104,17 +111,19 @@ void setup(){
 unsigned int cpmCounter=0;
 int stato = 0;
 int tmp = 64;
+int extDuty = 60;
+
 
 void loop(){
 
   //Serial.println(cpmCounter % 7); 
 
   // imposta il duty da un potenziometro (in futuro da interfaccia bluetooth)
-  int t = analogRead(A0); //map(analogRead(A0),0,1024,0,255);
+  int t = analogRead(A5); //map(analogRead(A0),0,1024,0,255);
   if (t != tmp){
     tmp = t;	
-    OCR1B = t;
-    delay(10);    
+    extDuty = t;
+  //  delay(10);    
     Serial.println(t);
   }
 }
@@ -128,7 +137,7 @@ void timer1_init(){
   //mcu freq
   unsigned char result=(int)((257.0-(16000000.0/44100))+0.5); //the 0.5 is for rounding;
   //	 result=(int)((257.0-(TIMER_CLOCK_FREQ/timeoutFrequency))+0.5); //the 0.5 is for rounding;
-  ICR1=1023;  // range: 1023 (7.8 KHz) 65 (123 KHz)
+  ICR1=875;  // range: 1023 (7.8 KHz) 65 (123 KHz)
 
   TCCR1A = 0;      // Just clear register. 
 
@@ -165,9 +174,9 @@ ISR(TIMER1_COMPB_vect) {
 
   cpmCounter++;
 
-  if(cpmCounter >= 300){
+  if(cpmCounter >= extDuty){
     //machineStates(cpmCounter % 7);
-    PORTD = states[++stato % 4];
+    PORTD = states[++stato % NUM_STATES];
     cpmCounter = 0;
   }
 
