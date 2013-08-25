@@ -1,78 +1,12 @@
 /*
 
- pin 2,3 -- demultiplexer selector: 
- 
- 			A 00
- 
- 			B 01		
- 
- 			C 10
- 
- 			
- 
- pin 4,5,6 --  mosfet in basso     <-----  dobbiamo valutare se la digitalWrite non è troppo lenta se no anche qui registri
- 
- 
- 
- pin 10 -- phase frequency correct pwm 
- 
- 
- 
- 
- 
- A0   --sensore di corrente:   se A0 <= 0   ->    nuovo stato 
- 
- 
- 
- A1  -- potenziometro per controllare la velocità di rotazione (duty)
- 
- 
- 
+ Il circuito prevede che i pin 2 3 e 4 siano collegati ai 
+ pin di comando dei buffer gate il cui input e' il segnale pwm generato dal timer.
+ I 3 gate vanno connessi ai mosfet nella parte superiore.
+ I pin 4,5 e 6 devono essere invece collegati direttamente ai mosfet della parte inferiore.
  
  
  */
-
-
-/* il codice eseguito sui registri PORTD e DDRD e' piu leggibile in questa forma 
- void machineStates(int i){
- 
- 	// puo essere ottimizzato ancora meglio
- 	// sulla codifica del demux...
- 
- 	switch(i){
- 
- 		case 0:
- 			digitalWrite(2,LOW);
- 			digitalWrite(3,HIGH);
- 		break;
- 
- 		case 1:
- 			digitalWrite(4,HIGH);
- 			digitalWrite(6,LOW);
- 		break;
- 
- 		case 2:
- 			digitalWrite(2,LOW);
- 			digitalWrite(3,HIGH);
- 		break;
- 
- 		case 3:
- 			digitalWrite(4,LOW);
- 			digitalWrite(5,HIGH);
- 		break;
- 
- 		case 4:
- 			digitalWrite(2,LOW);
- 			digitalWrite(3,LOW);
- 		break;
- 
- 		case 5:
- 			digitalWrite(5,LOW);
- 			digitalWrite(6,HIGH);
- 	}
- 
- 
- }*/
 
 #define NUM_STATES 6
 
@@ -84,18 +18,12 @@ byte states[NUM_STATES] = {
   B00110000,
   B01010000}; //store PORTD values for the states;
 
-  
-
 
 void machineState_init(){
 
   DDRD |= B01111100;  // set pin [2,6] as output
-
   PORTD = states[0];
-
-
 }
-
 
 void setup(){
 
@@ -103,10 +31,8 @@ void setup(){
 
   machineState_init();
   timer1_init();
-
 }
 
-//conta le iterazioni, utile in diversi casi e safe anche se fa overflow
 
 unsigned int cpmCounter=0;
 int stato = 0;
@@ -123,18 +49,15 @@ void loop(){
   if (t != tmp){
     tmp = t;	
     extDuty = t;
-  //  delay(10);    
+    //  delay(10);    
     Serial.println(t);
   }
 }
 
-
 void timer1_init(){
 
-
-
   pinMode(10,OUTPUT);
-  //mcu freq
+
   unsigned char result=(int)((257.0-(16000000.0/44100))+0.5); //the 0.5 is for rounding;
   //	 result=(int)((257.0-(TIMER_CLOCK_FREQ/timeoutFrequency))+0.5); //the 0.5 is for rounding;
   ICR1=875;  // range: 1023 (7.8 KHz) 65 (123 KHz)
@@ -149,38 +72,28 @@ void timer1_init(){
   // 8 prescaler 
   // PWM wave frequency is f= 8000000/(2*8*256) = 1953.12 Hz (1.9 kHz) 
   // Should be TCCR1B although the output is on OC1A 
-  TCCR1B |= _BV(CS10);//define prescaler 8.  This is equavalent to 1.9 KHz. 
-
+  TCCR1B |= _BV(CS10);//define no prescaler. 
 
   TIMSK1 = _BV(OCIE1B);
 
-
-
   //load the timer for its first cycle
-
   TCNT1=result; 
 
-
-  OCR1B=64; //x2 range 0-255 
-  //Now should get PWM on OCR1A and OCR1B with duty cycles proportional to X1 and X2. 
-
+  OCR1B=64; //range 0-255 
 }
 
 ISR(TIMER1_COMPB_vect) {
 
-  //Capture the current timer value. This is how much error we have
-
-  //due to interrupt latency and the work in this function
-
   cpmCounter++;
 
   if(cpmCounter >= extDuty){
-    //machineStates(cpmCounter % 7);
+
+    // iterazione attraverso gli stati dell'automa
     PORTD = states[++stato % NUM_STATES];
     cpmCounter = 0;
   }
-
 }
+
 
 
 
