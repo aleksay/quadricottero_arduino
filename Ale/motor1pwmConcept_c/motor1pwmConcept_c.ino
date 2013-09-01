@@ -25,9 +25,16 @@ void machineState_init(){
   PORTD = states[0];
 }
 
+String inputString = "";         // a string to hold incoming data
+boolean stringComplete = false;  // whether the string is complete
+volatile int refreshRate = 26;
+
+
 void setup(){
 
   Serial.begin(9600);
+
+ inputString.reserve(20);
 
   machineState_init();
   timer1_init();
@@ -41,16 +48,14 @@ int extDuty = 60;
 
 
 void loop(){
-
-  //Serial.println(cpmCounter % 7); 
-
-  // imposta il duty da un potenziometro (in futuro da interfaccia bluetooth)
-  int t = analogRead(A5); //map(analogRead(A0),0,1024,0,255);
-  if (t != tmp){
-    tmp = t;	
-    extDuty = t;
-    //  delay(10);    
-    Serial.println(t);
+  // print the string when a newline arrives:
+  if (stringComplete) {
+    int val = inputString.toInt();
+    
+    Serial.println(val); 
+    // clear the string:
+    inputString = "";
+    stringComplete = false;
   }
 }
 
@@ -86,7 +91,7 @@ ISR(TIMER1_COMPB_vect) {
 
   cpmCounter++;
 
-  if(cpmCounter >= extDuty){
+  if(cpmCounter >= refreshRate){
 
     // iterazione attraverso gli stati dell'automa
     PORTD = states[++stato % NUM_STATES];
@@ -95,6 +100,19 @@ ISR(TIMER1_COMPB_vect) {
 }
 
 
-
+void serialEvent() {
+  while (Serial.available()) {
+    // get the new byte:
+    char inChar = (char)Serial.read(); 
+    // add it to the inputString:
+    inputString += inChar;
+    // if the incoming character is a newline, set a flag
+    // so the main loop can do something about it:
+    if (inChar == '\n') {
+      stringComplete = true;
+    } 
+  }
+  refreshRate = inputString.toInt();
+}
 
 
