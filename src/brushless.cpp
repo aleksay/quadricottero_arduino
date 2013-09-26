@@ -4,7 +4,7 @@
  Il circuito prevede che i pin 2 3 e 4 siano collegati ai 
  pin di comando dei buffer gate il cui input e' il segnale pwm generato dal timer.
  I 3 gate vanno connessi ai mosfet nella parte superiore.
- I pin 4,5 e 6 devono essere invece collegati direttamente ai mosfet della parte inferiore.
+ I pin 5,6 e 7 devono essere invece collegati direttamente ai mosfet della parte inferiore.
  
  
  */
@@ -15,33 +15,20 @@
 #define NUM_STATES 6
 
 
-byte states[NUM_STATES] = {
-  B01000100,
-  B10000100,
-  B10001000,
-  B00101000,
-  B00110000,
-  B01010000};
 
+brushless::brushless(float timeoutFrequency){
 
-volatile unsigned int cpmCounter=0;
-volatile int stato = 0;
-
-volatile int frequency;
-volatile int refreshRate;
-volatile int duty;
-
-
-brushless::brushless(int timeoutFrequency){
-
-  DDRD |= B01111100;  // set pin [2,6] as output
+  DDRD |= B11111100;  // set pin [2,7] as output
   PORTD = states[0];  // set up first state on pins 2,6
 
-  timer1_init(timeoutFrequency);
+  frequency   = 1023;
+  duty        = 50;
+  refreshRate = 10;
 
-  frequency   = 875;
-  duty        = 64;
-  refreshRate = 100;
+  cpmCounter=0;
+  stato = 0
+
+  timer1_init(timeoutFrequency);
 
 }
 
@@ -65,6 +52,8 @@ void brushless::setFrequency(int val){
 
   ICR1 = val;
   frequency = val;  
+
+//Serial.println(cpmCounter);
 }
 
 void brushless::setDuty(int val){
@@ -85,13 +74,14 @@ void brushless::setRefreshRate(int val){
 }
 
 
-void brushless::timer1_init(int timeoutFrequency){
+void brushless::timer1_init(float timeoutFrequency){
 
   pinMode(10,OUTPUT);
 
   unsigned char result=(int)((257.0-(TIMER_CLOCK_FREQ/timeoutFrequency))+0.5); //the 0.5 is for rounding;
 
-  ICR1   = 875;  // range: 1023 (7.8 KHz) 65 (123 KHz)    il max dovrebbe essere 65536
+
+  ICR1   = frequency;  // range: 1023 (7.8 KHz) 65 (123 KHz)    il max dovrebbe essere 65536
 
   TCCR1A = 0;    // Just clear register. 
 
@@ -105,7 +95,7 @@ void brushless::timer1_init(int timeoutFrequency){
   //load the timer for its first cycle
   TCNT1  = result; 
 
-  OCR1B  = 64; //range 0-255 
+  OCR1B  = duty; //range 0-255 
 }
 
 
@@ -119,8 +109,7 @@ ISR(TIMER1_COMPB_vect) {
     stato      = ++stato % NUM_STATES;
     PORTD      = states[stato];
     
-    cpmCounter = 0;
-  
+    cpmCounter = 0;  
   }
 }
 

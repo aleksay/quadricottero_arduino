@@ -7,7 +7,7 @@ class serialComm {
 
 public:
 
-  serialComm(int baudrate);
+  serialComm(int i);
   int getHaveCommand();
   char getCommandType();
   int getCommandValue();
@@ -18,7 +18,9 @@ private:
   String inputBuffer;
   int haveCommand;
   char commandType;
-  int commandValue;
+  unsigned int commandValue;
+  int inLength;
+
 
   void processString();
 };

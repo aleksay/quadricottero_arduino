@@ -1,34 +1,17 @@
 #include <Arduino.h>
 #include "serialComm.h"
 
-String inputBuffer;
-int haveCommand;
-char commandType;
-int commandValue;
 
-serialComm::serialComm(int baudrate){
+serialComm::serialComm(int i){
   //Serial.begin(baudrate);
-  
-  inputBuffer = "";
+  inLength     = 0;
+  inputBuffer  = "";
   inputBuffer.reserve(20);
   
   haveCommand  = 0;
   commandType  = '\n';
   commandValue = 0;
 }
-
-void serialComm::processString(){
-  
-      char  inputStringValue[3];
-      inputStringValue[0] = inputBuffer[1];
-      inputStringValue[1] = inputBuffer[2];
-      inputStringValue[2] = inputBuffer[3];      
- 	
-      commandType = inputBuffer[0];
-      commandValue = atoi(inputStringValue);
-    
-      haveCommand = 1;
-} 
 
 void serialComm::eventHandler() {
   while (Serial.available()) {
@@ -40,13 +23,24 @@ void serialComm::eventHandler() {
     inputBuffer += inChar;
     
     // if the incoming character is a newline, set a flag
-    // so the main loop can do something about it:
+    // extract integer value from string:
     if (inChar == '\n') {
-     char  inputStringValue[3];
-      inputStringValue[0] = inputBuffer[1];
-      inputStringValue[1] = inputBuffer[2];
-      inputStringValue[2] = inputBuffer[3];      
- 	
+      
+      
+      inLength = inputBuffer.length();
+      char inputStringValue[inputBuffer.length()-1];
+      
+      int i=1;
+      while(i<inLength-1){
+        inputStringValue[i-1] = inputBuffer[i];
+        i++;
+      }
+      
+//     //char  inputStringValue[3];
+//      inputStringValue[0] = inputBuffer[1];
+//      inputStringValue[1] = inputBuffer[2];
+//      inputStringValue[2] = inputBuffer[3];      
+// 	
       commandType = inputBuffer[0];
       commandValue = atoi(inputStringValue);
     
@@ -60,7 +54,8 @@ void serialComm::eventHandler() {
 int serialComm::getCommandValue(){
   
   int tmp      = commandValue;
-  
+Serial.print("length ");
+  Serial.println(inLength);
   inputBuffer  = "";
   haveCommand  = 0;
   commandType  = '\n';
