@@ -1,6 +1,7 @@
 #include "brushless.h"
 #include "serialComm.h"
 
+
 brushless mymotor(44100.0);
 serialComm myserial(0);
 
@@ -13,6 +14,7 @@ void setup() {
 
 
 void loop() {
+  
   if(myserial.getHaveCommand() == 1){
 
     char commandType = myserial.getCommandType();
@@ -52,7 +54,10 @@ void commandMap(char commandType, int commandValue){
   }
 }
 
+ISR(TIMER1_COMPB_vect) {
+ mymotor.eventHandler();
 
+}
 
 void serialEvent(){
   myserial.eventHandler();

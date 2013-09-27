@@ -1,16 +1,19 @@
 #include <Arduino.h>
 #include "serialComm.h"
 
+//int debugState; //led state...vedi Debug 
 
 serialComm::serialComm(int i){
-  //Serial.begin(baudrate);
-  inLength     = 0;
+  bufferLength     = 0;
   inputBuffer  = "";
   inputBuffer.reserve(20);
   
   haveCommand  = 0;
   commandType  = '\n';
   commandValue = 0;
+  
+ 
+  
 }
 
 void serialComm::eventHandler() {
@@ -21,17 +24,17 @@ void serialComm::eventHandler() {
     
     // add it to the inputString:
     inputBuffer += inChar;
-    
+
     // if the incoming character is a newline, set a flag
     // extract integer value from string:
     if (inChar == '\n') {
       
-      
-      inLength = inputBuffer.length();
+        
+      bufferLength = inputBuffer.length();
       char inputStringValue[inputBuffer.length()-1];
       
       int i=1;
-      while(i<inLength-1){
+      while(i<bufferLength-1){
         inputStringValue[i-1] = inputBuffer[i];
         i++;
       }
@@ -55,7 +58,7 @@ int serialComm::getCommandValue(){
   
   int tmp      = commandValue;
 Serial.print("length ");
-  Serial.println(inLength);
+  Serial.println(bufferLength);
   inputBuffer  = "";
   haveCommand  = 0;
   commandType  = '\n';

@@ -19,10 +19,8 @@ private:
   int haveCommand;
   char commandType;
   unsigned int commandValue;
-  int inLength;
+  int bufferLength;
 
-
-  void processString();
 };
 
 #endif
