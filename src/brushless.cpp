@@ -79,9 +79,10 @@ digitalWrite(13,debugState=!debugState);
 void brushless::setDuty(int val){
 
   if(val < 0 || val > 255) return;
-
-  OCR1B = val;
+  
   duty  = val;
+  OCR1B = map(duty,0,255,0,frequency);
+  
 }
 
 void brushless::setRefreshRate(int val){
@@ -98,23 +99,13 @@ void brushless::timer1_init(float timeoutFrequency){
 
   pinMode(10,OUTPUT);
 
-  //unsigned char result=(int)((257.0-(TIMER_CLOCK_FREQ/timeoutFrequency))+0.5); //the 0.5 is for rounding;
-
-  ICR1   = 1024;//frequency;  // range: 1023 (7.8 KHz) 65 (123 KHz)    il max dovrebbe essere 65536
-
- // TCCR1A = 0;    // Just clear register. 
-
-  TCCR1B = _BV(WGM13) | _BV(CS10)| _BV(CS11); // phase and freq correct mode and define no prescaler. 
-
-  // OC1A,B HI when COUNT = OCR1A,B upcounting, LO when COUNT = OCR1A,B downcounting. 
-  TCCR1A = _BV(COM1B1)| _BV(COM1B0);// |  _BV(COM1A1) | _BV(COM1A0); 
-
-  TIMSK1 = _BV(OCIE1B);//signal handler association
+  TCCR1B = (1 << CS10) | (1 << WGM13);
+  TCCR1A = (1 << COM1B1);//|(1 << COM1A1) |(1 << COM1A0);
   
-  //load the timer for its first cycle
-  TCNT1  = 0;//result; 
-
-  OCR1B  = duty; //range 0-254 with 254 always LOW and 0 alwais HIGH 
+  TIMSK1 = _BV(OCIE1B);//signal handler association
+      
+  ICR1 = 830;
+  OCR1B = map(duty,0,255,0,frequency); //range 0-254 with 254 always LOW and 0 alwais HIGH 
 }
 
 
