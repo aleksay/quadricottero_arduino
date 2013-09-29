@@ -3,7 +3,11 @@
 
 //int debugState; //led state...vedi Debug 
 
-serialComm::serialComm(int i){
+serialComm::serialComm(){
+          Serial.print("Entering constructor for: ");
+        Serial.println(__FUNCTION__);
+
+  
   bufferLength     = 0;
   inputBuffer  = "";
   inputBuffer.reserve(20);
@@ -57,8 +61,7 @@ void serialComm::eventHandler() {
 int serialComm::getCommandValue(){
   
   int tmp      = commandValue;
-Serial.print("length ");
-  Serial.println(bufferLength);
+
   inputBuffer  = "";
   haveCommand  = 0;
   commandType  = '\n';

@@ -7,7 +7,7 @@ class serialComm {
 
 public:
 
-  serialComm(int i);
+  serialComm();
   int getHaveCommand();
   char getCommandType();
   int getCommandValue();

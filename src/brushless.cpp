@@ -13,6 +13,7 @@
 
 #define TIMER_CLOCK_FREQ 8000000.0
 #define NUM_STATES 6
+//#define DEBUG
 
 byte states[NUM_STATES] = {
   	B01000100,
@@ -22,35 +23,46 @@ byte states[NUM_STATES] = {
   	B00110000,
   	B01010000};
 
-int debugState; //led state...vedi Debug 
+brushless::brushless(){
 
-brushless::brushless(float timeoutFrequency){
-
-   /*Debug!
-    
-    uncomment above instruction here and
-    move this on the code for blinking included led!
-    digitalWrite(13,debugState=!debugState);
-    
-    */
-   
-  pinMode(13,OUTPUT);
-  debugState=0;
- 
+        Serial.print("Entering constructor for: ");
+        Serial.println(__FUNCTION__);
   
   DDRD |= B11111100;  // set pin [2,7] as output
   PORTD = states[0];  // set up first state on pins 2,6
 
-  frequency   = 1023;
-  duty        = 50;
-  refreshRate = 10;
+  frequency   = 800;
+  duty        = 199;
+  refreshRate = 9;
 
   cpmCounter=0;
   stato = 0;
 
-  timer1_init(timeoutFrequency);
+  timer1_init();
 
 }
+
+int brushless::timer1_init(){
+
+  pinMode(10,OUTPUT);
+/*
+Prescaler is configged like this:
+
+(1 << CS10): divide by 1, 64, 1024
+(1 << WGM13): 16 bit Phase+Frequency correct, TOP =ICR1
+(1 << COM1B1): non-inverting, and inverting?????
+*/
+
+
+  TCCR1B = (1 << CS10) | (1 << WGM13);
+  TCCR1A = (1 << COM1B1);
+  
+  TIMSK1 = _BV(OCIE1B);//signal handler association
+  
+  ICR1  = frequency;
+  OCR1B = map(duty,0,255,0,frequency);  
+}
+
 
 int brushless::getFrequency(){ 
   return frequency;
@@ -62,54 +74,46 @@ int brushless::getRefreshRate(){
   return refreshRate;
 }
 
-void brushless::setFrequency(int val){
+int brushless::setFrequency(int val){
   /*
   in questo punto sarebbe bello determinare un range di 
    valori utili e mapparlo su una scala di valori semplici tipo 0 - 100
    
    per ora passiamo tutto
    */
-digitalWrite(13,debugState=!debugState);
-  ICR1 = val;
-  frequency = val;  
 
-//Serial.println(cpmCounter);
+  ICR1 = val;
+  frequency = val;
+  setDuty(duty);
+  return ICR1;
 }
 
-void brushless::setDuty(int val){
+int brushless::setDuty(int val){
 
-  if(val < 0 || val > 255) return;
+  if(val < 0 || val >= 255) return -1;
   
   duty  = val;
   OCR1B = map(duty,0,255,0,frequency);
+  return OCR1B;
   
 }
 
-void brushless::setRefreshRate(int val){
+int brushless::setRefreshRate(int val){
 
   /*
   necessaria un analisi sperimentale di questo valore
    */
 
   refreshRate = val;
-}
-
-
-void brushless::timer1_init(float timeoutFrequency){
-
-  pinMode(10,OUTPUT);
-
-  TCCR1B = (1 << CS10) | (1 << WGM13);
-  TCCR1A = (1 << COM1B1);//|(1 << COM1A1) |(1 << COM1A0);
   
-  TIMSK1 = _BV(OCIE1B);//signal handler association
-      
-  ICR1 = 830;
-  OCR1B = map(duty,0,255,0,frequency); //range 0-254 with 254 always LOW and 0 alwais HIGH 
+  return 0;
 }
 
 
-void brushless::eventHandler(){
+
+
+
+int brushless::eventHandler(){
 
   cpmCounter++;
 

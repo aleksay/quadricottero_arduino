@@ -11,14 +11,14 @@ class brushless {
   
   public:
   
-    brushless(float timeoutFrequency);
-    void setFrequency(int val);
-    void setRefreshRate(int val);
-    void setDuty(int val);
+    brushless();
+    int setFrequency(int val);
+    int setRefreshRate(int val);
+    int setDuty(int val);
     int getFrequency();
     int getRefreshRate();
     int getDuty();
-    void eventHandler();
+    int eventHandler();
     //void iterate();
   
   private:
@@ -29,7 +29,7 @@ class brushless {
     volatile unsigned int refreshRate;
     volatile unsigned int duty;//holds register value
   
-    void timer1_init(float timeoutFrequency);
+    int timer1_init();
 };
 
 #endif
