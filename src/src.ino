@@ -22,9 +22,18 @@ void setup() {
   {
     brushlessPtr=new brushless();  // This is critical  - create a new class here only
   }
+  
+  delay(180);
+  for (int i=180;i > 18 ;i--){
+    int d = (41490-55 * i)/ 162;
+    brushlessPtr->setRefreshRate(i);
+    brushlessPtr->setDuty(d);
+    delay(40);
+  }
+  Serial.println("init stop");
+
+
 }
-
-
 
 void loop() {
 
@@ -124,6 +133,7 @@ ISR(TIMER1_COMPB_vect) {
 void serialEvent(){
   serialCommPtr->eventHandler();
 }
+
 
 
 

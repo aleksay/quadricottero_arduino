@@ -32,8 +32,8 @@ brushless::brushless(){
   PORTD = states[0];  // set up first state on pins 2,6
 
   frequency   = 800;
-  duty        = 199;
-  refreshRate = 9;
+  duty        = 200;
+  refreshRate = 178;
 
   cpmCounter=0;
   stato = 0;
