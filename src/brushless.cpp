@@ -16,27 +16,27 @@
 //#define DEBUG
 
 byte states[NUM_STATES] = {
-  	B01000100,
-  	B10000100,
-  	B10001000,
-  	B00101000,
-  	B00110000,
-  	B01010000};
+  B01000100,
+  B10000100,
+  B10001000,
+  B00101000,
+  B00110000,
+  B01010000};
 
 brushless::brushless(){
 
-        Serial.print("Entering constructor for: ");
-        Serial.println(__FUNCTION__);
-  
-  DDRD |= B11111100;  // set pin [2,7] as output
-  PORTD = states[0];  // set up first state on pins 2,6
+  Serial.print("Entering constructor for: ");
+  Serial.println(__FUNCTION__);
+
+  DDRD       |= B11111100;  // set pin [2,7] as output
+  PORTD       = states[0];  // set up first state on pins 2,6
 
   frequency   = 800;
   duty        = 200;
   refreshRate = 178;
 
-  cpmCounter=0;
-  stato = 0;
+  cpmCounter  = 0;
+  stato       = 0;
 
   timer1_init();
 
@@ -45,22 +45,21 @@ brushless::brushless(){
 int brushless::timer1_init(){
 
   pinMode(10,OUTPUT);
-/*
-Prescaler is configged like this:
-
-(1 << CS10): divide by 1, 64, 1024
-(1 << WGM13): 16 bit Phase+Frequency correct, TOP =ICR1
-(1 << COM1B1): non-inverting, and inverting?????
-*/
-
+  /*
+    Prescaler is configged like this:
+   
+   (1 << CS10): divide by 1, 64, 1024
+   (1 << WGM13): 16 bit Phase+Frequency correct, TOP =ICR1
+   (1 << COM1B1): non-inverting, and inverting?????
+   */
 
   TCCR1B = (1 << CS10) | (1 << WGM13);
   TCCR1A = (1 << COM1B1);
-  
-  TIMSK1 = _BV(OCIE1B);//signal handler association
-  
-  ICR1  = frequency;
-  OCR1B = map(duty,0,255,0,frequency);  
+
+  TIMSK1 = _BV(OCIE1B);  //signal handler association
+
+  ICR1   = frequency;
+  OCR1B  = map(duty,0,255,0,frequency);  
 }
 
 
@@ -76,14 +75,15 @@ int brushless::getRefreshRate(){
 
 int brushless::setFrequency(int val){
   /*
-  in questo punto sarebbe bello determinare un range di 
+   in questo punto sarebbe bello determinare un range di 
    valori utili e mapparlo su una scala di valori semplici tipo 0 - 100
    
    per ora passiamo tutto
    */
 
-  ICR1 = val;
+  ICR1      = val;
   frequency = val;
+  
   setDuty(duty);
   return ICR1;
 }
@@ -91,11 +91,11 @@ int brushless::setFrequency(int val){
 int brushless::setDuty(int val){
 
   if(val < 0 || val >= 255) return -1;
-  
+
   duty  = val;
   OCR1B = map(duty,0,255,0,frequency);
   return OCR1B;
-  
+
 }
 
 int brushless::setRefreshRate(int val){
@@ -105,10 +105,9 @@ int brushless::setRefreshRate(int val){
    */
 
   refreshRate = val;
-  
+
   return 0;
 }
-
 
 
 
@@ -122,8 +121,9 @@ int brushless::eventHandler(){
     // iterazione attraverso gli stati dell'automa
     stato      = ++stato % NUM_STATES;
     PORTD      = states[stato];
-    
+
     cpmCounter = 0;  
   }
 }
+
 

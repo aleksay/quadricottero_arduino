@@ -2,10 +2,8 @@
 #include "serialComm.h"
 
 
-brushless *brushlessPtr =NULL;
-serialComm *serialCommPtr =NULL;
-
-
+brushless *brushlessPtr   = NULL;
+serialComm *serialCommPtr = NULL;
 
 
 void setup() {
@@ -14,20 +12,38 @@ void setup() {
 
   Serial.begin(9600);
   Serial.println("inizio ");
-  if (serialCommPtr==NULL)
+  if (serialCommPtr == NULL)
   {
-    serialCommPtr=new serialComm();  // This is critical  - create a new class here only
+    serialCommPtr = new serialComm();  // This is critical  - create a new class here only
   }
-  if (brushlessPtr==NULL)
+  if (brushlessPtr == NULL)
   {
-    brushlessPtr=new brushless();  // This is critical  - create a new class here only
+    brushlessPtr  = new brushless();  // This is critical  - create a new class here only
   }
   
+  /*
+  StartUp Sequence
+  
+  based on initial values:
+    frequency   = 800;
+    duty        = 200; //  --> to 254
+    refreshRate = 178; //  --> to 19
+  in the brushless constructor.
+  
+  
+  linear progression for duty and refresh rate.
+  
+  */
   delay(180);
+  int d = 0;
+  
   for (int i=180;i > 18 ;i--){
-    int d = (41490-55 * i)/ 162;
+  
+    d = (41490-55 * i)/ 162;
+  
     brushlessPtr->setRefreshRate(i);
     brushlessPtr->setDuty(d);
+  
     delay(40);
   }
   Serial.println("init stop");
@@ -46,22 +62,20 @@ void loop() {
     commandMap(commandType, commandValue);
   }
 
-  //OCR1B = ++ICR1/2;
-  // delay(5);
 }
 
 
 
 void commandMap(char commandType, int commandValue){
-  int r=-10;//return value holder
+  
+  int r = -10;               //return value holder
 
   switch(commandType){
 
   case 'f':
-    r=-10;
-    r=brushlessPtr->setFrequency(commandValue);
-    if(r>0){
-
+    r = -10;
+    r = brushlessPtr->setFrequency(commandValue);
+    if(r > 0){
       Serial.print("frequency: ");
       Serial.println(commandValue);
     }
@@ -77,9 +91,9 @@ void commandMap(char commandType, int commandValue){
 
 
   case 'd':
-    r=-10;
-    r=brushlessPtr->setDuty(commandValue);
-    if(r>0){
+    r = -10;
+    r = brushlessPtr->setDuty(commandValue);
+    if(r > 0){
       Serial.print("duty: ");
       Serial.println(commandValue);
     }
@@ -95,9 +109,9 @@ void commandMap(char commandType, int commandValue){
 
 
   case 'r':
-    r=-10;
-    r=brushlessPtr->setRefreshRate(commandValue);
-    if(r==0){
+    r = -10;
+    r = brushlessPtr->setRefreshRate(commandValue);
+    if(r == 0){
       Serial.print("refreshRate: ");
       Serial.println(commandValue);
     }    
@@ -106,8 +120,7 @@ void commandMap(char commandType, int commandValue){
       Serial.println(": invalid return value case r");
     }
     break;
-
-
+    
 
   case 'p':
     Serial.print("Frequency: ");
