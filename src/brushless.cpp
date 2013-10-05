@@ -81,10 +81,37 @@ int brushless::setFrequency(int val){
    per ora passiamo tutto
    */
 
-  ICR1      = val;
-  frequency = val;
+
+  int diff = val - frequency;
   
-  setDuty(duty);
+    Serial.print(__FUNCTION__);
+    Serial.print(" :diff is:");
+    Serial.println(diff);
+    
+  if(diff == 0){
+    Serial.print("setFrequency exit: same value ");
+    Serial.println(frequency);
+    return frequency;
+  }
+  if(diff > 0){
+    for(int i=0;i<diff;i++){
+      ICR1      = ++frequency;
+      setDuty(duty);
+      Serial.println(frequency);
+    }  
+  }
+  if(diff < 0){
+    for(int i=diff;i<0;i++){
+      ICR1      = --frequency;
+      setDuty(duty);
+      Serial.println(frequency);
+    }  
+  }
+
+  //ICR1      = val;
+  //frequency = val;
+
+  //setDuty(duty);
   return ICR1;
 }
 
@@ -104,12 +131,27 @@ int brushless::setRefreshRate(int val){
   necessaria un analisi sperimentale di questo valore
    */
 
-  refreshRate = val;
 
+  int diff = val - refreshRate;
+
+  if(diff == 0){
+    Serial.print("setRefreshRate exit: same value ");
+    Serial.println(refreshRate);
+    return 0;
+  }
+
+  if(diff > 0){
+    for(int i=0;i<diff;i++){
+      refreshRate = ++refreshRate;
+    }  
+  }
+  if(diff < 0){
+    for(int i=diff;i>0;i++){
+      refreshRate = --refreshRate;
+    }  
+  }
   return 0;
 }
-
-
 
 
 int brushless::eventHandler(){
@@ -125,5 +167,6 @@ int brushless::eventHandler(){
     cpmCounter = 0;  
   }
 }
+
 
 
