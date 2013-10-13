@@ -4,7 +4,7 @@
 
 brushless *brushlessPtr   = NULL;
 serialComm *serialCommPtr = NULL;
-
+Command lastCommand;
 
 void setup() {
 
@@ -47,37 +47,29 @@ void setup() {
     delay(40);
   }
   Serial.println("init stop");
-
-
 }
 
-void loop() {
-
+void loop() { 
 
   if(serialCommPtr->getHaveCommand() == 1){
 
-    char commandType = serialCommPtr->getCommandType();
-    int commandValue = serialCommPtr->getCommandValue();
-
-    commandMap(commandType, commandValue);
+    lastCommand = serialCommPtr->getCommand();    
+    commandMap(lastCommand);
   }
-
 }
 
-
-
-void commandMap(char commandType, int commandValue){
+void commandMap(Command currentCommand){
   
   int r = -10;               //return value holder
 
-  switch(commandType){
+  switch(currentCommand->type){
 
   case 'f':
     r = -10;
-    r = brushlessPtr->setFrequency(commandValue);
+    r = brushlessPtr->setFrequency(currentCommand->value);
     if(r > 0){
       Serial.print("frequency: ");
-      Serial.println(commandValue);
+      Serial.println(currentCommand->value);
     }
     else{
       Serial.print(__FUNCTION__);
@@ -89,13 +81,12 @@ void commandMap(char commandType, int commandValue){
 
     break;
 
-
   case 'd':
     r = -10;
-    r = brushlessPtr->setDuty(commandValue);
+    r = brushlessPtr->setDuty(currentCommand->value);
     if(r > 0){
       Serial.print("duty: ");
-      Serial.println(commandValue);
+      Serial.println(currentCommand->value);
     }
     else{
       Serial.print(__FUNCTION__);
@@ -110,10 +101,10 @@ void commandMap(char commandType, int commandValue){
 
   case 'r':
     r = -10;
-    r = brushlessPtr->setRefreshRate(commandValue);
+    r = brushlessPtr->setRefreshRate(currentCommand->value);
     if(r == 0){
       Serial.print("refreshRate: ");
-      Serial.println(commandValue);
+      Serial.println(currentCommand->value);
     }    
     else{
       Serial.print(__FUNCTION__);
@@ -133,7 +124,10 @@ void commandMap(char commandType, int commandValue){
 
   default:
     Serial.print(__FUNCTION__);
-    Serial.println(": invalid command letter type");
+    Serial.print(": invalid command: ");
+    Serial.print(currentCommand->type);
+    Serial.print(" value: ");
+    Serial.println(currentCommand->value);
     break;  
   }
 }

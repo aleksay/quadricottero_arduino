@@ -1,22 +1,22 @@
 #include <Arduino.h>
 #include "serialComm.h"
 
-//int debugState; //led state...vedi Debug 
 
 serialComm::serialComm(){
   
   Serial.print("Entering constructor for: ");
   Serial.println(__FUNCTION__);
 
-  bufferLength = 0;
-  inputBuffer  = "";
+  bufferLength          = 0;
+  
+  inputBuffer           = "";
   inputBuffer.reserve(20);
 
-  haveCommand  = 0;
-  commandType  = '\n';
-  commandValue = 0;
-
-
+  haveCommand           = 0;
+  
+  currentCommand        = (Command)malloc(sizeof(_command));
+  currentCommand->type  = '\n';
+  currentCommand->value = 0;
 
 }
 
@@ -46,30 +46,26 @@ void serialComm::eventHandler() {
         i++;
       }
 
-       commandType = inputBuffer[0];
-      commandValue = atoi(inputStringValue);
+      currentCommand->type  = inputBuffer[0];
+      currentCommand->value = atoi(inputStringValue);
 
       haveCommand  = 1;
     } 
   }
 }
 
+Command serialComm::getCommand(){
 
+  Command tmpCommand    = (Command)malloc(sizeof(_command));
+  tmpCommand->type      = currentCommand->type;
+  tmpCommand->value     = currentCommand->value;
 
-int serialComm::getCommandValue(){
+  inputBuffer           = "";
+  haveCommand           = 0;
+  currentCommand->type  = '\n';
+  currentCommand->value = 0;
 
-  int tmp      = commandValue;
-
-  inputBuffer  = "";
-  haveCommand  = 0;
-  commandType  = '\n';
-  commandValue = 0;
-
-  return tmp;
-}
-
-char serialComm::getCommandType(){
-  return commandType;  
+  return tmpCommand;
 }
 
 int serialComm::getHaveCommand(){
