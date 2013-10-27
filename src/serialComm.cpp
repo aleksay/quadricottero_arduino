@@ -4,8 +4,8 @@
 
 serialComm::serialComm(){
   
-  Serial.print("Entering constructor for: ");
-  Serial.println(__FUNCTION__);
+//  Serial.print("Entering constructor for: ");
+//  Serial.println(__FUNCTION__);
 
   bufferLength          = 0;
   

@@ -2,6 +2,8 @@
 #include "serialComm.h"
 
 
+#define F_CPU 8000000UL
+
 brushless *brushlessPtr   = NULL;
 serialComm *serialCommPtr = NULL;
 Command lastCommand;
@@ -11,7 +13,7 @@ void setup() {
 
 
   Serial.begin(9600);
-  Serial.println("inizio ");
+  Serial.println("init ");
   if (serialCommPtr == NULL)
   {
     serialCommPtr = new serialComm();  // This is critical  - create a new class here only
@@ -67,34 +69,34 @@ void commandMap(Command currentCommand){
   case 'f':
     r = -10;
     r = brushlessPtr->setFrequency(currentCommand->value);
-    if(r > 0){
-      Serial.print("frequency: ");
-      Serial.println(currentCommand->value);
-    }
-    else{
-      Serial.print(__FUNCTION__);
-      Serial.println(": invalid return value case f");
-    }
-
-    Serial.print("return value case f ICR1: ");
-    Serial.println(r);
+//    if(r > 0){
+//      Serial.print("frequency: ");
+//      Serial.println(currentCommand->value);
+//    }
+//    else{
+//      Serial.print(__FUNCTION__);
+//      Serial.println(": invalid return value case f");
+//    }
+//
+//    Serial.print("return value case f ICR1: ");
+//    Serial.println(r);
 
     break;
 
   case 'd':
     r = -10;
     r = brushlessPtr->setDuty(currentCommand->value);
-    if(r > 0){
-      Serial.print("duty: ");
-      Serial.println(currentCommand->value);
-    }
-    else{
-      Serial.print(__FUNCTION__);
-      Serial.println(": invalid return value case d");
-    }
-
-    Serial.print("return value case d OCR1B: ");
-    Serial.println(r);
+//    if(r > 0){
+//      Serial.print("duty: ");
+//      Serial.println(currentCommand->value);
+//    }
+//    else{
+//      Serial.print(__FUNCTION__);
+//      Serial.println(": invalid return value case d");
+//    }
+//
+//    Serial.print("return value case d OCR1B: ");
+//    Serial.println(r);
 
     break;
 
@@ -102,32 +104,32 @@ void commandMap(Command currentCommand){
   case 'r':
     r = -10;
     r = brushlessPtr->setRefreshRate(currentCommand->value);
-    if(r == 0){
-      Serial.print("refreshRate: ");
-      Serial.println(currentCommand->value);
-    }    
-    else{
-      Serial.print(__FUNCTION__);
-      Serial.println(": invalid return value case r");
-    }
+//    if(r == 0){
+//      Serial.print("refreshRate: ");
+//      Serial.println(currentCommand->value);
+//    }    
+//    else{
+//      Serial.print(__FUNCTION__);
+//      Serial.println(": invalid return value case r");
+//    }
     break;
     
 
   case 'p':
-    Serial.print("Frequency: ");
+    Serial.print("f");
     Serial.println(brushlessPtr->getFrequency());
-    Serial.print("Duty Cycle: ");
+    Serial.print("d");
     Serial.println(brushlessPtr->getDuty());
-    Serial.print("Refresh Rate: ");
+    Serial.print("r");
     Serial.println(brushlessPtr->getRefreshRate());
     break;
 
   default:
-    Serial.print(__FUNCTION__);
-    Serial.print(": invalid command: ");
-    Serial.print(currentCommand->type);
-    Serial.print(" value: ");
-    Serial.println(currentCommand->value);
+//    Serial.print(__FUNCTION__);
+//    Serial.print(": invalid command: ");
+//    Serial.print(currentCommand->type);
+//    Serial.print(" value: ");
+//    Serial.println(currentCommand->value);
     break;  
   }
 }

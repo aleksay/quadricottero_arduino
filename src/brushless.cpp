@@ -11,7 +11,10 @@
 #include <Arduino.h>
 #include "brushless.h"
 
-#define TIMER_CLOCK_FREQ 8000000.0
+#ifndef F_CPU
+#define F_CPU 8000000.0
+#endif
+
 #define NUM_STATES 6
 //#define DEBUG
 
@@ -25,8 +28,8 @@ byte states[NUM_STATES] = {
 
 brushless::brushless(){
 
-  Serial.print("Entering constructor for: ");
-  Serial.println(__FUNCTION__);
+//  Serial.print("Entering constructor for: ");
+//  Serial.println(__FUNCTION__);
 
   DDRD       |= B11111100;  // set pin [2,7] as output
   PORTD       = states[0];  // set up first state on pins 2,6
@@ -84,9 +87,9 @@ int brushless::setFrequency(int val){
 
   int diff = val - frequency;
   
-    Serial.print(__FUNCTION__);
-    Serial.print(" :diff is:");
-    Serial.println(diff);
+//    Serial.print(__FUNCTION__);
+//    Serial.print(" :diff is:");
+//    Serial.println(diff);
     
   if(diff == 0){
     Serial.print("setFrequency exit: same value ");
@@ -97,14 +100,14 @@ int brushless::setFrequency(int val){
     for(int i=0;i<diff;i++){
       ICR1      = ++frequency;
       setDuty(duty);
-      Serial.println(frequency);
+ //    Serial.println(frequency);
     }  
   }
   if(diff < 0){
     for(int i=diff;i<0;i++){
       ICR1      = --frequency;
       setDuty(duty);
-      Serial.println(frequency);
+  //    Serial.println(frequency);
     }  
   }
 
@@ -143,11 +146,13 @@ int brushless::setRefreshRate(int val){
   if(diff > 0){
     for(int i=0;i<diff;i++){
       refreshRate = ++refreshRate;
+//      Serial.println(refreshRate);
     }  
   }
   if(diff < 0){
-    for(int i=diff;i>0;i++){
+    for(int i=diff;i<=0;i++){
       refreshRate = --refreshRate;
+//      Serial.println(refreshRate);
     }  
   }
   return 0;
