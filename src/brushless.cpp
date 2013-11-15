@@ -57,7 +57,7 @@ int brushless::timer1_init(){
    */
 
   TCCR1B = (1 << CS10) | (1 << WGM13);
-  TCCR1A = (1 << COM1B1);
+  TCCR1A = (1 << COM1B1) | (1 << COM1B0) | (1 << COM1A1) | (1 << COM1A0);
 
   TIMSK1 = _BV(OCIE1B);  //signal handler association
 
