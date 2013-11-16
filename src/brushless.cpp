@@ -62,7 +62,7 @@ int brushless::timer1_init(){
   TIMSK1 = _BV(OCIE1B);  //signal handler association
 
   ICR1   = frequency;
-  OCR1B  = map(duty,0,255,0,frequency);  
+  setDuty(duty); 
 }
 
 
@@ -120,12 +120,10 @@ int brushless::setFrequency(int val){
 
 int brushless::setDuty(int val){
 
-  if(val < 0 || val >= 255) return -1;
-
-  duty  = val;
-  OCR1B = map(duty,0,255,frequency,0);
-  return OCR1B;
-
+  if(val < 0 || val >= 100) return -1;
+  duty  = map(val,0,100,0,frequency);
+  OCR1B = duty; 
+  return duty;
 }
 
 int brushless::setRefreshRate(int val){
