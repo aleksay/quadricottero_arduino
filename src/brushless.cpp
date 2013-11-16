@@ -123,7 +123,7 @@ int brushless::setDuty(int val){
   if(val < 0 || val >= 255) return -1;
 
   duty  = val;
-  OCR1B = map(duty,0,255,0,frequency);
+  OCR1B = map(duty,0,255,frequency,0);
   return OCR1B;
 
 }
