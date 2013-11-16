@@ -48,6 +48,7 @@ brushless::brushless(){
 int brushless::timer1_init(){
 
   pinMode(10,OUTPUT);
+  pinMode(9,OUTPUT);
   /*
     Prescaler is configged like this:
    
@@ -62,7 +63,8 @@ int brushless::timer1_init(){
   TIMSK1 = _BV(OCIE1B);  //signal handler association
 
   ICR1   = frequency;
-  OCR1B  = map(duty,0,255,0,frequency);  
+  OCR1B  = map(duty,0,255,0,frequency);
+  OCR1A  = map(duty,0,255,0,frequency);  
 }
 
 
@@ -124,6 +126,7 @@ int brushless::setDuty(int val){
 
   duty  = val;
   OCR1B = map(duty,0,255,0,frequency);
+  OCR1A = map(duty,0,255,0,frequency);
   return OCR1B;
 
 }
