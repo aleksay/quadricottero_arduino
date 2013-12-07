@@ -2,6 +2,26 @@
 #include "serialComm.h"
 
 
+
+/*
+autovalidator:
+
+struttura dati statica
+{
+  {'a',0,255}
+  {'b',NULL,NULL}
+  {'c',-64357,65356}
+}
+
+e poi parsing al volo della stringa del dominio per la validazione
+del comando appena ricevuto
+
+
+
+
+*/
+
+
 serialComm::serialComm(){
   
 //  Serial.print("Entering constructor for: ");
@@ -63,7 +83,7 @@ Command serialComm::getCommand(){
   inputBuffer           = "";
   haveCommand           = 0;
   currentCommand->type  = '\n';
-  currentCommand->value = 0;
+  currentCommand->value = NULL;
 
   return tmpCommand;
 }
