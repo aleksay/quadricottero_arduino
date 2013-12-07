@@ -1,0 +1,28 @@
+
+Quadricottero_Arduino TODO - List
+
+
+_1 Sequenza di avvio dell'elica
+
+
+1) Feedback 
+  _1 Disegno ed implementazione del filtro per 
+     i 3 canali di entrata nell'ADC
+  _2 Scrittura delle funzioni di cattura dei valori e
+     rilevamento dello Zero-Cross
+  _3 Scrittura delle funzioni per l'associazione tra l'ADC
+     ed il Timer1 ed i necessari event-handler
+     
+2) Moduli Comunicazione
+  _1 Interfaccia di controllo:
+     _Sistema dinamico di gestione della lista di comandi     
+     _Validazione dei comandi
+  _2 Seriale
+     _Scrittura delle funzioni read(), write(char c) e isAvalilable()
+     _Gestione asincrona della comunicazione seriale e buffering
+     _Misura e valutazione del timing rispetto al Timer1
+  
+  _3 I2C
+     _Scrittura delle funzioni read(), write() e isAvailable()
+     _Gestione dei segnali legati alla communicazione i2c
+     
