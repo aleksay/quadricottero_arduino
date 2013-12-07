@@ -1,4 +1,3 @@
-
 Quadricottero_Arduino TODO - List
 
 
@@ -26,3 +25,6 @@ _1 Sequenza di avvio dell'elica
      _Scrittura delle funzioni read(), write() e isAvailable()
      _Gestione dei segnali legati alla communicazione i2c
      
+3) Software Reset
+  _1 implementazione circuiteria necessaria
+  _2 definisione del comando reset
