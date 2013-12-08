@@ -22,7 +22,7 @@ serialComm::serialComm(){
 
 void serialComm::eventHandler() {
   
-  char inChar = NULL;
+  char inChar = -1;
   
   while (Serial.available()) {
 
@@ -36,7 +36,7 @@ void serialComm::eventHandler() {
     // extract integer value from string:
     if (inChar == '\n') {
 
-      inChar       = NULL;
+      inChar       = -1;
       bufferLength = inputBuffer.length();
       char inputStringValue[bufferLength-1];
 

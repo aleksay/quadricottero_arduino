@@ -36,18 +36,20 @@ void setup() {
   linear progression for duty and refresh rate.
   
   */
-  delay(180);
-  int d = 0;
-  
-  for (int i=180;i > 18 ;i--){
-  
-    d = (41490-55 * i)/ 162;
-  
-    brushlessPtr->setRefreshRate(i);
-    brushlessPtr->setDuty(d);
-  
-    delay(40);
-  }
+//  delay(180);
+//  int d = 0;
+//  
+//  for (int i=180;i > 18 ;i--){
+//  
+//    d = (41490-55 * i)/ 162;
+//  
+//    brushlessPtr->setRefreshRate(i);
+//    brushlessPtr->setDuty(d);
+//  
+//    delay(40);
+//  }
+delay(10);
+setDuty(10)
   Serial.println("init stop");
 }
 

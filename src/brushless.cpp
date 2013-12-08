@@ -34,9 +34,9 @@ brushless::brushless(){
   DDRD       |= B11111100;  // set pin [2,7] as output
   PORTD       = states[0];  // set up first state on pins 2,6
 
-  frequency   = 800;
-  duty        = 200;
-  refreshRate = 178;
+  frequency   = 1100;
+  duty        = 60;
+  refreshRate = 100;
 
   cpmCounter  = 0;
   stato       = 0;
@@ -57,14 +57,23 @@ int brushless::timer1_init(){
    (1 << COM1B1): non-inverting, and inverting?????
    */
 
+  ICR1   = frequency;
+  OCR1B  = map(duty,0,255,0,frequency);
+  OCR1A  = map(duty,0,255,0,frequency);  
+
   TCCR1B = (1 << CS10) | (1 << WGM13);
   TCCR1A = (1 << COM1B1) | (1 << COM1B0) | (1 << COM1A1) | (1 << COM1A0);
 
   TIMSK1 = _BV(OCIE1B);  //signal handler association
 
-  ICR1   = frequency;
-  OCR1B  = map(duty,0,255,0,frequency);
-  OCR1A  = map(duty,0,255,0,frequency);  
+  PORTD       = states[0];
+  PORTD       = states[1];
+  PORTD       = states[2];  
+  PORTD       = states[3];
+  PORTD       = states[4];
+  PORTD       = states[5];
+
+  
 }
 
 
