@@ -35,7 +35,7 @@ brushless::brushless(){
   PORTD       = states[0];  // set up first state on pins 2,6
 
   frequency   = 1100;
-  duty        = 60;
+  duty        = 30;
   refreshRate = 100;
 
   cpmCounter  = 0;
@@ -66,13 +66,26 @@ int brushless::timer1_init(){
 
   TIMSK1 = _BV(OCIE1B);  //signal handler association
 
-  PORTD       = states[0];
+  
   PORTD       = states[1];
+  delay(4);
   PORTD       = states[2];  
+  delay(4);
   PORTD       = states[3];
+   delay(4);
   PORTD       = states[4];
+   delay(4);
   PORTD       = states[5];
-
+  delay(4);
+  PORTD       = states[0];
+  delay(4);
+  ICR1        = 600;
+  OCR1B       = map(5,0,255,0,600);
+  OCR1A       = map(5,0,255,0,600);
+  refreshRate = 40;
+  
+  frequency   = 600;
+  duty        = 5;
   
 }
 

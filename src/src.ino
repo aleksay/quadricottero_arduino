@@ -48,8 +48,7 @@ void setup() {
 //  
 //    delay(40);
 //  }
-delay(10);
-setDuty(10)
+ 
   Serial.println("init stop");
 }
 
