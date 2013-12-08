@@ -1,3 +1,5 @@
+#include <avr/wdt.h>
+
 #include "brushless.h"
 #include "serialComm.h"
 
@@ -7,6 +9,19 @@
 brushless *brushlessPtr   = NULL;
 serialComm *serialCommPtr = NULL;
 Command lastCommand;
+
+
+void wdt_init(void) __attribute__((naked)) __attribute__((section(".init3")));
+
+// Function Implementation
+void wdt_init(void)
+{
+    MCUSR = 0;
+    wdt_disable();
+
+    return;
+}
+
 
 void setup() {
 
@@ -122,6 +137,10 @@ void commandMap(Command currentCommand){
     Serial.println(brushlessPtr->getDuty());
     Serial.print("r");
     Serial.println(brushlessPtr->getRefreshRate());
+    break;
+
+  case 'R':
+    wdt_init();
     break;
 
   default:
